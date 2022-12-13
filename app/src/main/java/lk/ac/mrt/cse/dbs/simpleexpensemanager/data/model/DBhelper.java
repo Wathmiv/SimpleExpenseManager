@@ -27,7 +27,7 @@ public class DBhelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTableAccount = "CREATE TABLE "+Account_Table+ " (ID integer primary key autoincrement, " + accountNo + " text, " + bankName + " text, "+ accountHolderName + " text, " + balance+" double)";
-        String createTableTransaction = "CREATE TABLE "+Transaction_Table +" (ID integer primary key autoincrement, " + accountNoTransaction + " text, " + Expense_type+" text, " + amount +" double, " + date+" integer)  ";
+        String createTableTransaction = "CREATE TABLE "+Transaction_Table +" (ID integer primary key autoincrement, " + accountNoTransaction + " text, " + Expense_type+" text, " + amount +" double, " + date+" text)  ";
         db.execSQL(createTableAccount);
         db.execSQL(createTableTransaction);
     }

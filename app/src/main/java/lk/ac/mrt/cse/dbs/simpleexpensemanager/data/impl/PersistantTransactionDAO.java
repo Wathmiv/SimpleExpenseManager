@@ -4,7 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,20 +26,15 @@ public class PersistantTransactionDAO implements TransactionDAO {
     @Override
     public void logTransaction(Date date, String accountNo, ExpenseType expenseType, double amount) {
         db = dbHelper.getWritableDatabase();
-        String expenseType1;
-        if (expenseType == ExpenseType.EXPENSE){
-            expenseType1 = "Expense";
-        }
-        else{
-            expenseType1 = "Income";
-        }
+        DateFormat formatter = new SimpleDateFormat("MM/dd/yy");
+        String Date = formatter.format(date);
 
         ContentValues cv = new ContentValues();
          cv.put("accountNo", accountNo);
-         cv.put("Expense_type", expenseType1);
+         cv.put("Expense_type", String.valueOf(expenseType));
          cv.put("amount", amount);
-         cv.put("date", date.getTime());
-        db.insert("Transaction", null, cv);
+         cv.put("date", Date);
+        db.insert("transction", null, cv);
         db.close();
     }
 
@@ -50,18 +46,18 @@ public class PersistantTransactionDAO implements TransactionDAO {
         Cursor cursor = db.rawQuery(query, null);
         while (cursor.moveToNext()){
             String accountNo = cursor.getString(cursor.getColumnIndex("accountNo"));
-            String Expense_type = cursor.getString(cursor.getColumnIndex("Expense_type"));
-            double amount = cursor.getDouble(cursor.getColumnIndex("amount"));
-            Date date = new Date(cursor.getInt(cursor.getColumnIndex("date")));
-            ExpenseType expenseType;
-            if (Expense_type == "Expense"){
-                expenseType = ExpenseType.EXPENSE;
-            }
-            else{
-                expenseType = ExpenseType.INCOME;
-            }
 
-            Transaction transaction = new Transaction(date,accountNo,expenseType,amount);
+            String Expense_type = cursor.getString(cursor.getColumnIndex("Expense_type"));
+            ExpenseType expenseType = ExpenseType.valueOf(Expense_type.toUpperCase());
+
+            double amount = cursor.getDouble(cursor.getColumnIndex("amount"));
+            String date = cursor.getString(cursor.getColumnIndex("date"));
+            Date DateObject=null;
+            try {
+                DateObject = new SimpleDateFormat("MM/dd/yyyy").parse(date);
+            } catch (Exception e) {}
+
+            Transaction transaction = new Transaction(DateObject,accountNo,expenseType,amount);
             TransactionList.add(transaction);
 
         }
